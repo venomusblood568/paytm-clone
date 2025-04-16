@@ -1,13 +1,16 @@
+import express, { Request, Response } from "express";
 
-import express from "express";
+const PORT = process.env.PORT || 3000;
+const app = express();
 
-const PORT = process.env.PORT || 3000
-const app = express()
+app.get("/testroutes", (req: Request, res: Response) => {
+  try {
+    res.status(200).json({ message: "All routes working fine" });
+  } catch (error: any) {
+    res.status(500).json({ error: `Internal Server Error: ${error.message}` });
+  }
+});
 
-app.get('/', (Reqest,Response) => {
-    Response.send("pay backend working fine")
-})
-
-app.listen(PORT,()=>{
-    console.log(`Server running on port ${PORT}`);
-})
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
