@@ -7,7 +7,7 @@
 | **Express** | Fast, minimalist web framework for Node.js         |
 | **Mongoose** | MongoDB ODM for schema-based data modeling        |
 | **Zod**     | Type-safe schema validation for request payloads   |
-
+| **JSONWEBTOKEN** |JWT securely verifies user identity between client and server. |
 ---
 
 ###  Error Status Codes Backend
