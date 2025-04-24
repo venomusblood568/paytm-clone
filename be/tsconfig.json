@@ -7,8 +7,9 @@
     "esModuleInterop": true,
     "strict": true,
     "moduleResolution": "node", // Critical for resolving types
-    "types": ["node"], // Explicitly include Node types
-    "resolveJsonModule": true
+    "types": ["express","node"], // Explicitly include Node types
+    "resolveJsonModule": true,
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": ["src/**/*"], // Explicitly include source files
   "exclude": ["node_modules"]
