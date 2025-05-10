@@ -2,14 +2,35 @@ import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { UserModel } from "../db";
+import {z} from "zod";
 
 const router = express.Router()
+
+const signupSchema = z.object({
+    firstname: z.string(),
+    lastname: z.string(),
+    username: z.string(),
+    password:z.string(),
+
+})
+
+const signinSchema = z.object({
+    username:z.string(),
+    password:z.string()
+})
 
 // Signup route
 router.post(
   "/signup",
   async (req: Request, res: Response): Promise<void> => {
-    const { firstname, lastname, username, password } = req.body;
+    const parsed = signupSchema.safeParse(req.body);
+    
+    if(!parsed.success){
+        res.status(400).json({error: parsed.error.flatten().fieldErrors})
+        return;
+    }
+
+    const {firstname,lastname,username,password} = parsed.data;
 
     try {
       const existingUser = await UserModel.findOne({ username });
@@ -33,7 +54,14 @@ router.post(
 router.post(
   "/signin",
   async (req: Request, res: Response): Promise<void> => {
-    const { username, password } = req.body;
+    const parsed = signinSchema.safeParse(req.body);
+
+    if(!parsed.success){
+        res.status(400).json({errors:parsed.error.flatten().fieldErrors});
+        return;
+    }
+
+    const {username,password} = parsed.data;
 
     try {
       const existingUser = await UserModel.findOne({ username });

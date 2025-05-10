@@ -16,10 +16,26 @@ const express_1 = __importDefault(require("express"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
 const db_1 = require("../db");
+const zod_1 = require("zod");
 const router = express_1.default.Router();
+const signupSchema = zod_1.z.object({
+    firstname: zod_1.z.string(),
+    lastname: zod_1.z.string(),
+    username: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+const signinSchema = zod_1.z.object({
+    username: zod_1.z.string(),
+    password: zod_1.z.string()
+});
 // Signup route
 router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { firstname, lastname, username, password } = req.body;
+    const parsed = signupSchema.safeParse(req.body);
+    if (!parsed.success) {
+        res.status(400).json({ error: parsed.error.flatten().fieldErrors });
+        return;
+    }
+    const { firstname, lastname, username, password } = parsed.data;
     try {
         const existingUser = yield db_1.UserModel.findOne({ username });
         if (existingUser) {
@@ -37,7 +53,12 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
 }));
 // Signin route
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, password } = req.body;
+    const parsed = signinSchema.safeParse(req.body);
+    if (!parsed.success) {
+        res.status(400).json({ errors: parsed.error.flatten().fieldErrors });
+        return;
+    }
+    const { username, password } = parsed.data;
     try {
         const existingUser = yield db_1.UserModel.findOne({ username });
         if (!existingUser) {
