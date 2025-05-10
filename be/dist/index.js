@@ -17,6 +17,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("./config");
 const middleware_1 = require("./middleware");
 const db_1 = require("./db");
+require('dotenv').config();
 const PORT = process.env.PORT || 3001;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -52,7 +53,7 @@ app.post("/api/v1/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
             return;
         }
         const token = jsonwebtoken_1.default.sign({ id: existingUser._id }, config_1.JWT_SECRET);
-        res.status(200).json({ token });
+        res.status(200).json({ token, message: "User sigin Successfully" });
     }
     catch (error) {
         console.log(`Signin Error:`, error);

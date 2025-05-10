@@ -4,8 +4,10 @@ import { JWT_SECRET } from "./config";
 import { UserMiddleware } from "./middleware";
 import { UserModel } from "./db";
 
+require('dotenv').config()
 const PORT = process.env.PORT || 3001;
 const app = express();
+
 
 app.use(express.json()); 
 
@@ -52,7 +54,7 @@ app.post(
       }
 
       const token = jwt.sign({ id: existingUser._id }, JWT_SECRET);
-      res.status(200).json({ token });
+      res.status(200).json({ token, message: "User sigin Successfully" });
     } catch (error) {
       console.log(`Signin Error:`, error);
       res.status(500).json({ message: "Internal Server Error" });
