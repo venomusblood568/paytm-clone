@@ -47,4 +47,29 @@ router.put("/update", middleware_1.UserMiddleware, (req, res) => __awaiter(void 
         }
     }
 }));
+router.get("/bulk", middleware_1.UserMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const filter = ((_a = req.query.filter) === null || _a === void 0 ? void 0 : _a.toString()) || "";
+    try {
+        const users = yield db_1.UserModel.find({
+            _id: { $ne: req.userId },
+            $or: [
+                { firstname: { $regex: filter, $options: "i" } },
+                { lastname: { $regex: filter, $options: "i" } }
+            ]
+        });
+        res.status(200).json({
+            user: users.map(user => ({
+                _id: user._id,
+                username: user.username,
+                firstname: user.firstname,
+                lastname: user.lastname
+            }))
+        });
+    }
+    catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}));
 exports.default = router;

@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { UserMiddleware } from "../middleware";
 import { UserModel } from "../db";
 import {z} from "zod";
+
 const router = express.Router()
 
 const updateUserSchema = z.object({
@@ -45,5 +46,30 @@ router.put(
     }
   }
 );
+
+router.get("/bulk", UserMiddleware, async(req:Request, res:Response): Promise<void> => {
+    const filter = req.query.filter?.toString() || "";
+    try{
+        const users = await UserModel.find({
+            _id:{ $ne : req.userId },
+            $or:[
+                {firstname: {$regex:filter, $options:"i"}},
+                {lastname: {$regex:filter, $options:"i"}}
+            ]
+        })
+        res.status(200).json({
+            user: users.map(user => ({
+                _id:user._id,
+                username: user.username,
+                firstname:user.firstname,
+                lastname:user.lastname
+
+            }))
+        })
+    } catch(error){
+        console.error("Error fetching user:", error);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+})
 
 export default router;
