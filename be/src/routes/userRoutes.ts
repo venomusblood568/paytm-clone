@@ -1,26 +1,31 @@
 import express, { Request, Response } from "express";
 import { UserMiddleware } from "../middleware";
 import { UserModel } from "../db";
-
+import {z} from "zod";
 const router = express.Router()
 
+const updateUserSchema = z.object({
+    firstname: z.string().optional(),
+    lastname: z.string().optional(),
+    password: z.string().optional()
+})
 
 // Update user route
 router.put(
   "/update",
   UserMiddleware,
   async (req: Request, res: Response): Promise<void> => {
-    const { firstname, lastname, password } = req.body;
-    const updatedData: Record<string, string> = {};
-
-    if (firstname) updatedData.firstname = firstname;
-    if (lastname) updatedData.lastname = lastname;
-    if (password) updatedData.password = password;
 
     try {
+        
+     const parsedData = updateUserSchema.parse(req.body);
+     if(Object.keys(parsedData).length === 0){
+        res.status(400).json({message:"At least one field must be provided"})
+        return;
+     }
       const updatedUser = await UserModel.findByIdAndUpdate(
         req.userId,
-        updatedData,
+        parsedData,
         { new: true }
       );
 
@@ -31,8 +36,12 @@ router.put(
 
       res.status(200).json({ message: "User Info updated", user: updatedUser });
     } catch (error) {
-      console.log(`Update Error:`, error);
+      if(error instanceof z.ZodError){
+        res.status(400).json({message:"Validation Error",error:error.errors})
+      }else{
+        console.log(`Update Error:`, error);
       res.status(500).json({ message: "Internal Server Error" });
+      }
     }
   }
 );
