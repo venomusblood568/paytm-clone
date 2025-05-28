@@ -1,6 +1,6 @@
 import express, { Response, Request } from "express";
 import { UserMiddleware } from "../middleware";
-import { AccountModel } from "../db";
+import { AccountModel, UserModel } from "../db";
 import mongoose from "mongoose";
 
 const router = express.Router();
@@ -13,17 +13,31 @@ router.get(
   UserMiddleware,
   async (req: Request, res: Response): Promise<void> => {
     try {
+      // Find the account for the user
       const account = await AccountModel.findOne({
         userId: req.userId,
       });
+
       if (!account) {
         res.status(404).json({ message: "Account not found for the user" });
-        return
+        return;
       }
-      res.status(200).json({ balance: account?.balance });
+
+      // Find the user to get the username
+      const user = await UserModel.findById(req.userId).select("username");
+
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      res.status(200).json({
+        balance: account.balance,
+        username: user.username,
+      });
     } catch (error) {
       res
-        .status(404)
+        .status(500)
         .json({ message: "Something went wrong in the backend", error });
     }
   }

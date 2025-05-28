@@ -1,22 +1,23 @@
 import "./App.css";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
-import Dashbaord from "./pages/dashboard";
 import Send from "./pages/send";
+import Dashboard from "./pages/dashboard";
 function App() {
-  return(
+  return (
     <>
-    <BrowserRouter>
-      <Routes>
-        <Route path={"/signup"} element={<Signup/>}/>
-        <Route path={"/signin"} element={<Signin/>}/>
-        <Route path={"/dashboard"} element={<Dashbaord/>}/>
-        <Route path={"/send"} element={<Send/>}/>
-      </Routes>
-    </BrowserRouter>
-  </>
-  )
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/signin" />} />
+          <Route path={"/signup"} element={<Signup />} />
+          <Route path={"/signin"} element={<Signin />} />
+          <Route path={"/dashboard"} element={<Dashboard />} />
+          <Route path={"/send"} element={<Send />} />
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
 }
 
 export default App;

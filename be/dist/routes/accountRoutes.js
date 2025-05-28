@@ -21,6 +21,7 @@ router.get("/accountroutes", (req, res) => {
 });
 router.get("/balance", middleware_1.UserMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // Find the account for the user
         const account = yield db_1.AccountModel.findOne({
             userId: req.userId,
         });
@@ -28,11 +29,20 @@ router.get("/balance", middleware_1.UserMiddleware, (req, res) => __awaiter(void
             res.status(404).json({ message: "Account not found for the user" });
             return;
         }
-        res.status(200).json({ balance: account === null || account === void 0 ? void 0 : account.balance });
+        // Find the user to get the username
+        const user = yield db_1.UserModel.findById(req.userId).select("username");
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+        res.status(200).json({
+            balance: account.balance,
+            username: user.username,
+        });
     }
     catch (error) {
         res
-            .status(404)
+            .status(500)
             .json({ message: "Something went wrong in the backend", error });
     }
 }));
