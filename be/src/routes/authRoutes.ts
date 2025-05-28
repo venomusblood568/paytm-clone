@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
-import { UserModel } from "../db";
+import { AccountModel, UserModel } from "../db";
 import {z} from "zod";
 
 const router = express.Router()
@@ -39,9 +39,14 @@ router.post(
         return;
       }
 
-      await UserModel.create({ firstname, lastname, username, password });
-
+      const newUser = await UserModel.create({ firstname, lastname, username, password });
+      
+      await AccountModel.create({
+        userid: newUser._id,
+        balance: 1 + Math.random() * 10000
+      })
       console.log(`Username: ${username} and Password: ${password}`);
+
       res.status(201).json({ message: "User Signed Up" });
     } catch (error) {
       console.log(`Signup Error:`, error);
