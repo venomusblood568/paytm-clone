@@ -42,7 +42,7 @@ router.post(
       const newUser = await UserModel.create({ firstname, lastname, username, password });
       
       await AccountModel.create({
-        userid: newUser._id,
+        userId: newUser._id,
         balance: 1 + Math.random() * 10000
       })
       console.log(`Username: ${username} and Password: ${password}`);

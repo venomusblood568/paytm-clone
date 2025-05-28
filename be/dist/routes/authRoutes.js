@@ -42,7 +42,11 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
             res.status(409).json({ message: "User already exists" });
             return;
         }
-        yield db_1.UserModel.create({ firstname, lastname, username, password });
+        const newUser = yield db_1.UserModel.create({ firstname, lastname, username, password });
+        yield db_1.AccountModel.create({
+            userId: newUser._id,
+            balance: 1 + Math.random() * 10000
+        });
         console.log(`Username: ${username} and Password: ${password}`);
         res.status(201).json({ message: "User Signed Up" });
     }
