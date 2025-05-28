@@ -36,4 +36,37 @@ router.get("/balance", middleware_1.UserMiddleware, (req, res) => __awaiter(void
             .json({ message: "Something went wrong in the backend", error });
     }
 }));
+router.post("/transfer", middleware_1.UserMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { amount, to } = req.body;
+        if (!amount || !to) {
+            res
+                .status(400)
+                .json({ message: "Amount and recipient (to) are required." });
+            return;
+        }
+        const senderAccount = yield db_1.AccountModel.findOne({ userId: req.userId });
+        if (!senderAccount) {
+            res.status(404).json({ message: "Sender account not found." });
+            return;
+        }
+        if (senderAccount.balance < amount) {
+            res.status(400).json({ message: "Insufficient balance." });
+            return;
+        }
+        const recipientAccount = yield db_1.AccountModel.findOne({ userId: to });
+        if (!recipientAccount) {
+            res.status(404).json({ message: "Recipient account not found." });
+            return;
+        }
+        // Perform balance updates
+        yield db_1.AccountModel.updateOne({ userId: req.userId }, { $inc: { balance: -amount } });
+        yield db_1.AccountModel.updateOne({ userId: to }, { $inc: { balance: amount } });
+        res.status(200).json({ message: "Transfer successful." });
+    }
+    catch (error) {
+        console.error("Transfer Error:", error);
+        res.status(500).json({ message: "Something went wrong.", error });
+    }
+}));
 exports.default = router;
