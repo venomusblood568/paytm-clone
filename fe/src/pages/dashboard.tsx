@@ -3,6 +3,8 @@ import { UserIcon } from "../assets/userIcon";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import Send from "./send";
+
 
 type DecodedToken = {
   id: string;
@@ -22,6 +24,10 @@ export default function Dashboard() {
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
   const navigate = useNavigate();
+
+  const[isModalOpen,setIsModalOpen] = useState(false);
+  const[selectedUser,setSelectedUser] = useState<User | null>(null);
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -89,6 +95,35 @@ export default function Dashboard() {
     fetchData();
   }, [navigate]);
 
+  const handleSendClick = (user:User) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  }
+  const handleTransactionConfirm = async(amount:number) => {
+    if(!selectedUser){
+      return;
+    }
+    console.log(`Sending $${amount} to ${selectedUser.username}`)
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "http://localhost:3000/api/v1/account/transfer",{
+          to: selectedUser._id,
+          amount,
+        },{
+          headers:{Authorization:`Bearer ${token}`},
+        }
+      );
+
+      alert(`Successfully send $${amount} to ${selectedUser.username}`);
+      setBalance((prev) => prev - amount);
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      alert("Transaction failed. Try again.")
+    }
+    setIsModalOpen(false);
+  }
+
   return (
     <div className="flex bg-gray-100 min-h-screen p-6">
       <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-5xl mx-auto space-y-6">
@@ -152,7 +187,10 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-500">@{user.username}</p>
               </div>
 
-              <button className="w-full mt-4 bg-blue-500 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-xl transition-all duration-200">
+              <button
+                onClick={() => handleSendClick(user)}
+                className="w-full mt-4 bg-blue-500 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-xl transition-all duration-200"
+              >
                 Send
               </button>
             </div>
@@ -163,6 +201,14 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+      {selectedUser && (
+        <Send
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleTransactionConfirm}
+          userName={selectedUser.username}
+        />
+      )}
     </div>
   );
 }
