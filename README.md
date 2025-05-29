@@ -1,27 +1,55 @@
-# Paytm Clone
+````md
+# 💸 Paytm Clone
 
-### ⚙️ Tech Stack Backend
+A simple full-stack Paytm clone with features like user authentication, wallet balance tracking, and money transfer.
 
-|  Tech     | Description                                     |
-|------------|----------------------------------------------------|
-| **Express** | Fast, minimalist web framework for Node.js         |
-| **Mongoose** | MongoDB ODM for schema-based data modeling        |
-| **Zod**     | Type-safe schema validation for request payloads   |
-| **JSONWEBTOKEN** |JWT securely verifies user identity between client and server. |
 ---
 
-###  Error Status Codes Backend
+### 1. Clone the Repo & Install
 
-|  Code |  Meaning                 |  When to Use |
-|--------:|---------------------------|----------------|
-| `200`     |         **OK**          |  General success (e.g., fetched user, wallet balance, etc.)               |
-|`201`    | **Created**              | Resource created successfully (e.g., user signup, new transaction)|
-|`204`    | **No Content**           |Successfully processed but no data to return (e.g., delete request)|
-| `400`   |  **Bad Request**         | Missing or invalid fields (e.g., amount, phone number) |
-| `401`   |  **Unauthorized**        | User not logged in or token missing/invalid |
-| `403`   |  **Forbidden**           | Authenticated but not allowed (e.g., admin-only route) |
-| `402`   |  **Payment Required**    | Payment failed (e.g., insufficient balance, card declined) |
-| `409`   |  **Conflict**            | Duplicate action (e.g., UPI already linked) |
-| `422`   |  **Unprocessable Entity**| Data format is valid, but can't be processed (e.g., expired card) |
-| `500`   |  **Internal Server Error** | Server error or unexpected exception |
-| `503`   |  **Service Unavailable** | Payment gateway or third-party service down |
+```bash
+git clone https://github.com/venomusblood568/paytm-clone
+cd paytm-clone
+npm install
+````
+
+### 2. Create `.env` File
+
+```env
+PORT=3000
+MONGO_URI=mongodb://localhost:27017/paytm-clone
+JWT_SECRET=your_jwt_secret
+```
+
+### 3. Run the Backend
+
+```bash
+npm run dev
+```
+
+
+### 🖼️ Backend Output
+
+![Mongo](results/mongo.png)
+![Mongo-Account](results/mongo_acc.png)
+
+
+---
+
+## 🎨 Frontend
+
+If you have a frontend, run it like this:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+📸 UI Screenshots:
+
+![Make your Account](results/acct.png)
+![Signin](results/signin.png)
+![Dashboard](results/dashboard.png)
+
+
